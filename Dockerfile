@@ -25,8 +25,9 @@ COPY pyproject.toml uv.lock ./
 RUN pip install --no-cache-dir uv
 RUN uv sync --frozen --no-install-project --no-dev
 
-COPY . .
+COPY --chown=appuser:appuser . .
+RUN chmod +x ./run.sh
 
 EXPOSE 8000
 
-CMD ["uv", "run", "python", "-m", "bin.api"]
+CMD ["./run.sh"]
