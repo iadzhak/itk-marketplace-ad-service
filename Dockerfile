@@ -27,6 +27,6 @@ RUN uv sync --frozen --no-install-project --no-dev
 
 COPY . .
 
-EXPOSE 8002
+EXPOSE 8000
 
 CMD ["uv", "run", "python", "-m", "bin.api"]
