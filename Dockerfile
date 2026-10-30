@@ -25,4 +25,4 @@ RUN uv sync --frozen --no-dev
 
 EXPOSE 8002
 
-CMD ["uv", "run", "python", "-m", "bin.api"]
+CMD ["/root/.local/bin/uv", "run", "python", "-m", "bin.api"]
