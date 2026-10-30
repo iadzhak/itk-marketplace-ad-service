@@ -1,3 +1,4 @@
+from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -14,8 +15,8 @@ class Settings(BaseSettings):
 
     jwt_secret: str = "change-me"
     jwt_algorithm: str = "HS256"
-    kafka_bootstrap_servers: str = "localhost:9092"
-    kafka_topic_ads: str = "ads"
+    kafka_bootstrap_servers: str = Field("localhost:9092", alias="KAFKA_BROKERS")
+    kafka_topic_ads: str = Field("ads", alias="KAFKA_TOPIC_MARKETPLACE_ADS")
     auth_service_url: str = "http://localhost:8000"
 
     @property
