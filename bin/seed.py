@@ -24,7 +24,9 @@ def load_seed() -> tuple[list[dict], list[str], list[dict]]:
 async def register(client: httpx.AsyncClient, user: dict) -> None:
     resp = await client.post("/api/auth/register", json=user)
     if resp.status_code == 201:
-        logger.info("registered user %s (user_id=%s)", user["email"], resp.json()["user_id"])
+        logger.info(
+            "registered user %s (user_id=%s)", user["email"], resp.json()["user_id"]
+        )
     elif resp.status_code == 409:
         logger.info("user %s already exists, skipping", user["email"])
     else:
@@ -127,7 +129,8 @@ def _build_ad(item: dict, cities: list[str]) -> dict:
     jitter = int(base_price * 0.05)
     return {
         "title": title,
-        "description": f"{title}. В отличном состоянии, есть все документы, возможен торг.",
+        "description": f"{title}. В отличном состоянии, есть "
+        f"все документы, возможен торг.",
         "price": max(0, base_price + random.randint(-jitter, jitter)),
         "category": category,
         "city": random.choice(cities),
@@ -135,14 +138,24 @@ def _build_ad(item: dict, cities: list[str]) -> dict:
 
 
 async def main() -> None:
-    logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)-5s %(message)s")
+    logging.basicConfig(
+        level=logging.INFO, format="%(asctime)s %(levelname)-5s %(message)s"
+    )
     random.seed(42)
 
     users, cities, items = load_seed()
-    logger.info("loaded %s users, %s cities, %s items from %s", len(users), len(cities), len(items), SEED_FILE)
+    logger.info(
+        "loaded %s users, %s cities, %s items from %s",
+        len(users),
+        len(cities),
+        len(items),
+        SEED_FILE,
+    )
     logger.info("using base url %s", BASE_URL)
 
-    async with httpx.AsyncClient(base_url=BASE_URL, timeout=10.0, follow_redirects=True) as client:
+    async with httpx.AsyncClient(
+        base_url=BASE_URL, timeout=10.0, follow_redirects=True
+    ) as client:
         logger.info("=== auth: register + login ===")
         for user in users:
             await register(client, user)
@@ -157,13 +170,18 @@ async def main() -> None:
         total_needed = len(users) * ADS_PER_USER
         if total_needed > len(items):
             raise RuntimeError(
-                f"need {total_needed} unique items but only {len(items)} are defined in {SEED_FILE}; "
+                f"need {total_needed} unique items but only {len(items)} "
+                f"are defined in {SEED_FILE}; "
                 f"reduce SEED_ADS_PER_USER or add more items"
             )
         shuffled = items.copy()
         random.shuffle(shuffled)
 
-        logger.info("=== ads: create %s per user (%s total unique) ===", ADS_PER_USER, total_needed)
+        logger.info(
+            "=== ads: create %s per user (%s total unique) ===",
+            ADS_PER_USER,
+            total_needed,
+        )
         created_by_user: dict[str, list[dict]] = {u["email"]: [] for u in users}
         for i, user in enumerate(users):
             token = tokens[user["email"]]
@@ -173,12 +191,15 @@ async def main() -> None:
                 created_by_user[user["email"]].append(ad)
             logger.info(
                 "created %s ads for %s",
-                len(created_by_user[user["email"]]), user["email"],
+                len(created_by_user[user["email"]]),
+                user["email"],
             )
 
         logger.info("=== ads: read ===")
         all_ads = await list_ads(client, limit=100)
-        logger.info("GET /ads → total=%s, items=%s", all_ads["total"], len(all_ads["items"]))
+        logger.info(
+            "GET /ads → total=%s, items=%s", all_ads["total"], len(all_ads["items"])
+        )
 
         for user in users:
             my = await list_my_ads(client, tokens[user["email"]])
@@ -194,7 +215,10 @@ async def main() -> None:
             client,
             tokens[first_email],
             first_ad["id"],
-            {"price": fetched["price"] + 10000, "title": fetched["title"] + " (обновлено)"},
+            {
+                "price": fetched["price"] + 10000,
+                "title": fetched["title"] + " (обновлено)",
+            },
         )
         logger.info("PUT /ads/%s → price=%s", updated["id"], updated["price"])
 
