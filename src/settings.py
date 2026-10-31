@@ -8,9 +8,9 @@ class Settings(BaseSettings):
     )
 
     postgres_host: str = "localhost"
-    postgres_database_name: str = "postgres"
+    postgres_database_name: str = "ads_db"
     postgres_password: str = "postgres"
-    postgres_port: int = 5432
+    postgres_port: int = 5434
     postgres_username: str = "postgres"
 
     jwt_secret: str = "change-me"
