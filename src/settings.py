@@ -13,6 +13,8 @@ class Settings(BaseSettings):
     postgres_port: int = 5434
     postgres_username: str = "postgres"
 
+    log_level: str = "INFO"
+
     jwt_secret: str = "change-me"
     jwt_algorithm: str = "HS256"
     kafka_bootstrap_servers: str = Field("localhost:9092", alias="KAFKA_BROKERS")

@@ -1,7 +1,11 @@
+import logging
+
 from src.application.exceptions import AdNotFoundError, ForbiddenError
 from src.application.ports.uow import UnitOfWork
 from src.application.ports.usecases import UpdateAdPort
 from src.domain.entities import Ad, AdStatus
+
+logger = logging.getLogger(__name__)
 
 
 class UpdateAd(UpdateAdPort):
@@ -34,4 +38,5 @@ class UpdateAd(UpdateAdPort):
             await self._uow.ads.save(ad)
             await self._uow.outbox.add("ad.updated", {"ad_id": ad.id})
             await self._uow.commit()
+        logger.info("ad updated: ad_id=%s user_id=%s", ad.id, user_id)
         return ad

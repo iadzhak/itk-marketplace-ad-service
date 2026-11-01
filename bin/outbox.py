@@ -1,5 +1,4 @@
 import asyncio
-import logging
 
 from aiokafka import AIOKafkaProducer
 
@@ -10,12 +9,13 @@ from src.infrastructure.persistence.database import (
     create_session_factory,
 )
 from src.infrastructure.persistence.uow import SQLAlchemyUnitOfWork
+from src.infrastructure.tracing import setup_logging, trace_context
 from src.settings import Settings
 
 
 async def main() -> None:
-    logging.basicConfig(level=logging.INFO)
     settings = Settings()
+    setup_logging(settings.log_level)
     engine = create_engine(settings)
     session_factory = create_session_factory(engine)
 
@@ -32,6 +32,7 @@ async def main() -> None:
     relay = OutboxRelay(
         uow_factory=lambda: SQLAlchemyUnitOfWork(session_factory),
         broker=broker,
+        trace_scope=trace_context,
     )
 
     try:

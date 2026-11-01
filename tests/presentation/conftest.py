@@ -5,6 +5,7 @@ import pytest
 from fastapi import FastAPI
 from httpx import ASGITransport, AsyncClient
 
+from src.infrastructure.tracing import TraceIdMiddleware
 from src.presentation.api.dependencies import (
     get_settings,
     get_uow,
@@ -33,6 +34,7 @@ def app(
     fake_user_profile: FakeUserProfileService,
 ) -> FastAPI:
     app = FastAPI()
+    app.add_middleware(TraceIdMiddleware)
     app.include_router(public_router)
     app.include_router(internal_router)
 

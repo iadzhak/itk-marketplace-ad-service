@@ -8,6 +8,7 @@ class OutboxMessage:
     id: int
     event_type: str
     payload: dict[str, Any]
+    trace_id: str | None = None
 
 
 class OutboxRepository(ABC):

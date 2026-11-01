@@ -1,7 +1,11 @@
+import logging
+
 from src.application.exceptions import AdNotFoundError, ForbiddenError
 from src.application.ports.uow import UnitOfWork
 from src.application.ports.usecases import DeleteAdPort
 from src.domain.entities import AdStatus
+
+logger = logging.getLogger(__name__)
 
 
 class DeleteAd(DeleteAdPort):
@@ -19,3 +23,4 @@ class DeleteAd(DeleteAdPort):
             await self._uow.ads.save(ad)
             await self._uow.outbox.add("ad.deleted", {"ad_id": ad.id})
             await self._uow.commit()
+        logger.info("ad deleted: ad_id=%s user_id=%s", ad_id, user_id)
